@@ -1,0 +1,308 @@
+import type { Response } from 'express';
+import { SpecificationRequestsService } from './specification-requests.service';
+import { CreateSpecificationRequestDto } from './dto/create-specification-request.dto';
+import { ApproveSpecificationRequestDto, ChangeSpecificationStatusDto, QuerySpecificationRequestDto, RejectSpecificationRequestDto, UpdateSpecificationRequestDto } from './dto/update-specification-request.dto';
+export declare class SpecificationRequestsController {
+    private readonly service;
+    constructor(service: SpecificationRequestsService);
+    create(dto: CreateSpecificationRequestDto, userId?: string): Promise<{
+        id: any;
+        ticketNumber: any;
+        requestType: string;
+        priority: any;
+        status: any;
+        title: any;
+        description: any;
+        rejectionReason: any;
+        requestedAt: any;
+        createdAt: any;
+        updatedAt: any;
+        requesterId: any;
+        requester: {
+            id: any;
+            fullName: any;
+            email: any;
+            phone: any;
+            organizationUnit: any;
+        } | null;
+        organizationUnitId: any;
+        organizationUnit: any;
+        items: never[];
+        specificationItems: any;
+        files: any;
+        statusHistory: never[];
+        updates: never[];
+        workLogs: never[];
+        approvalRequests: never[];
+        _count: {
+            workLogs: number;
+            approvalRequests: number;
+            updates: number;
+        };
+    } | null>;
+    findAll(query: QuerySpecificationRequestDto): Promise<import("../common/dto/paginated-result.dto").PaginatedResult<unknown>>;
+    stats(query: QuerySpecificationRequestDto): Promise<{
+        total: number;
+        byStatus: {
+            status: import("@prisma/client").$Enums.RequestStatus;
+            count: number;
+        }[];
+        byPriority: {
+            priority: import("@prisma/client").$Enums.RequestPriority;
+            count: number;
+        }[];
+    }>;
+    findByTicket(ticketNumber: string): Promise<{
+        id: any;
+        ticketNumber: any;
+        requestType: string;
+        priority: any;
+        status: any;
+        title: any;
+        description: any;
+        rejectionReason: any;
+        requestedAt: any;
+        createdAt: any;
+        updatedAt: any;
+        requesterId: any;
+        requester: {
+            id: any;
+            fullName: any;
+            email: any;
+            phone: any;
+            organizationUnit: any;
+        } | null;
+        organizationUnitId: any;
+        organizationUnit: any;
+        items: never[];
+        specificationItems: any;
+        files: any;
+        statusHistory: never[];
+        updates: never[];
+        workLogs: never[];
+        approvalRequests: never[];
+        _count: {
+            workLogs: number;
+            approvalRequests: number;
+            updates: number;
+        };
+    } | null>;
+    findOne(id: string): Promise<{
+        id: any;
+        ticketNumber: any;
+        requestType: string;
+        priority: any;
+        status: any;
+        title: any;
+        description: any;
+        rejectionReason: any;
+        requestedAt: any;
+        createdAt: any;
+        updatedAt: any;
+        requesterId: any;
+        requester: {
+            id: any;
+            fullName: any;
+            email: any;
+            phone: any;
+            organizationUnit: any;
+        } | null;
+        organizationUnitId: any;
+        organizationUnit: any;
+        items: never[];
+        specificationItems: any;
+        files: any;
+        statusHistory: never[];
+        updates: never[];
+        workLogs: never[];
+        approvalRequests: never[];
+        _count: {
+            workLogs: number;
+            approvalRequests: number;
+            updates: number;
+        };
+    } | null>;
+    update(id: string, dto: UpdateSpecificationRequestDto): Promise<{
+        id: any;
+        ticketNumber: any;
+        requestType: string;
+        priority: any;
+        status: any;
+        title: any;
+        description: any;
+        rejectionReason: any;
+        requestedAt: any;
+        createdAt: any;
+        updatedAt: any;
+        requesterId: any;
+        requester: {
+            id: any;
+            fullName: any;
+            email: any;
+            phone: any;
+            organizationUnit: any;
+        } | null;
+        organizationUnitId: any;
+        organizationUnit: any;
+        items: never[];
+        specificationItems: any;
+        files: any;
+        statusHistory: never[];
+        updates: never[];
+        workLogs: never[];
+        approvalRequests: never[];
+        _count: {
+            workLogs: number;
+            approvalRequests: number;
+            updates: number;
+        };
+    } | null>;
+    changeStatus(id: string, dto: ChangeSpecificationStatusDto, userId?: string): Promise<{
+        id: any;
+        ticketNumber: any;
+        requestType: string;
+        priority: any;
+        status: any;
+        title: any;
+        description: any;
+        rejectionReason: any;
+        requestedAt: any;
+        createdAt: any;
+        updatedAt: any;
+        requesterId: any;
+        requester: {
+            id: any;
+            fullName: any;
+            email: any;
+            phone: any;
+            organizationUnit: any;
+        } | null;
+        organizationUnitId: any;
+        organizationUnit: any;
+        items: never[];
+        specificationItems: any;
+        files: any;
+        statusHistory: never[];
+        updates: never[];
+        workLogs: never[];
+        approvalRequests: never[];
+        _count: {
+            workLogs: number;
+            approvalRequests: number;
+            updates: number;
+        };
+    } | null>;
+    approve(id: string, dto: ApproveSpecificationRequestDto, userId?: string): Promise<{
+        id: any;
+        ticketNumber: any;
+        requestType: string;
+        priority: any;
+        status: any;
+        title: any;
+        description: any;
+        rejectionReason: any;
+        requestedAt: any;
+        createdAt: any;
+        updatedAt: any;
+        requesterId: any;
+        requester: {
+            id: any;
+            fullName: any;
+            email: any;
+            phone: any;
+            organizationUnit: any;
+        } | null;
+        organizationUnitId: any;
+        organizationUnit: any;
+        items: never[];
+        specificationItems: any;
+        files: any;
+        statusHistory: never[];
+        updates: never[];
+        workLogs: never[];
+        approvalRequests: never[];
+        _count: {
+            workLogs: number;
+            approvalRequests: number;
+            updates: number;
+        };
+    } | null>;
+    reject(id: string, dto: RejectSpecificationRequestDto, userId?: string): Promise<{
+        id: any;
+        ticketNumber: any;
+        requestType: string;
+        priority: any;
+        status: any;
+        title: any;
+        description: any;
+        rejectionReason: any;
+        requestedAt: any;
+        createdAt: any;
+        updatedAt: any;
+        requesterId: any;
+        requester: {
+            id: any;
+            fullName: any;
+            email: any;
+            phone: any;
+            organizationUnit: any;
+        } | null;
+        organizationUnitId: any;
+        organizationUnit: any;
+        items: never[];
+        specificationItems: any;
+        files: any;
+        statusHistory: never[];
+        updates: never[];
+        workLogs: never[];
+        approvalRequests: never[];
+        _count: {
+            workLogs: number;
+            approvalRequests: number;
+            updates: number;
+        };
+    } | null>;
+    uploadFiles(id: string, userId: string, files?: Express.Multer.File[]): Promise<{
+        sizeBytes: number;
+        downloadUrl: string;
+        previewUrl: string;
+        id: string;
+        createdAt: Date;
+        fileName: string;
+        originalName: string;
+        mimeType: string;
+        fileType: string;
+    }[]>;
+    listFiles(id: string): Promise<any>;
+    downloadFile(id: string, fileId: string, res: Response): Promise<void>;
+    downloadFileDirect(fileId: string, res: Response): Promise<void>;
+    deleteFile(id: string, fileId: string): Promise<import("@prisma/client").Prisma.BatchPayload>;
+    remove(id: string): Promise<{
+        id: string;
+        description: string | null;
+        createdAt: Date;
+        updatedAt: Date;
+        deletedAt: Date | null;
+        status: import("@prisma/client").$Enums.RequestStatus;
+        ticketNumber: string;
+        requesterId: string | null;
+        priority: import("@prisma/client").$Enums.RequestPriority;
+        title: string | null;
+        rejectionReason: string | null;
+        requestedAt: Date;
+    }>;
+    restore(id: string): Promise<{
+        id: string;
+        description: string | null;
+        createdAt: Date;
+        updatedAt: Date;
+        deletedAt: Date | null;
+        status: import("@prisma/client").$Enums.RequestStatus;
+        ticketNumber: string;
+        requesterId: string | null;
+        priority: import("@prisma/client").$Enums.RequestPriority;
+        title: string | null;
+        rejectionReason: string | null;
+        requestedAt: Date;
+    }>;
+}

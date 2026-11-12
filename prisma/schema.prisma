@@ -1,0 +1,650 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─────────────────────────────────────────────
+// ENUMS
+// ─────────────────────────────────────────────
+enum OrganizationMembershipRole {
+  MEMBER
+  LEADER
+}
+
+enum ItemStatus {
+  ACTIVE
+  INACTIVE
+  MAINTENANCE
+}
+
+enum RequestPriority {
+  LOW
+  MEDIUM
+  HIGH
+  EMERGENCY
+}
+
+enum RequestStatus {
+  PENDING
+  WAITING_APPROVAL
+  PENDING_APPROVAL_REVIEW
+  APPROVED
+  ASSIGNED
+  IN_PROGRESS
+  WAITING_CONFIRMATION
+  COMPLETED
+  REJECTED
+  NOT_FIXED
+  CONFIRMED
+}
+
+enum TechnicianAssignmentStatus {
+  ASSIGNED
+  IN_PROGRESS
+  COMPLETED
+  NOT_FIXED
+  CANCELLED
+}
+
+enum AssignmentRole {
+  LEAD
+  ASSISTANT
+}
+
+enum WorkLogStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+}
+
+enum ApprovalStatus {
+  PENDING
+  FORWARDED
+  APPROVED
+  REJECTED
+}
+
+// ─────────────────────────────────────────────
+// USERS, ROLES, PERMISSIONS
+// ─────────────────────────────────────────────
+model User {
+  id              String    @id @default(uuid()) @db.Char(36)
+  fullName        String    @map("full_name") @db.VarChar(255)
+  email           String    @unique @db.VarChar(255)
+  phone           String?   @db.VarChar(50)
+  passwordHash    String    @map("password_hash") @db.VarChar(255)
+  isActive        Boolean   @default(true) @map("is_active")
+  emailVerifiedAt DateTime? @map("email_verified_at") @db.Timestamp(3)
+  lastLoginAt     DateTime? @map("last_login_at") @db.Timestamp(3)
+  lastLoginIp     String?   @map("last_login_ip") @db.VarChar(45)
+  createdAt       DateTime  @default(now()) @map("created_at") @db.Timestamp(3)
+  updatedAt       DateTime  @updatedAt @map("updated_at") @db.Timestamp(3)
+  deletedAt       DateTime? @map("deleted_at") @db.Timestamp(3)
+
+  // ONE user belongs to ONE node (nullable — user may not yet be placed)
+  organizationUnitId String?                    @map("organization_unit_id") @db.Char(36)
+  membershipRole     OrganizationMembershipRole @default(MEMBER) @map("membership_role")
+  organizationUnit   OrganizationUnit?          @relation("UserPrimaryNode", fields: [organizationUnitId], references: [id], onDelete: SetNull)
+
+  // ONE user can supervise ONE node (the node points to its supervisor)
+  supervisedUnit OrganizationUnit? @relation("UnitSupervisor")
+
+  // Many-to-many with roles
+  roleAssignments  UserRole[]
+  // Optional direct permission grants (exceptions)
+  permissionGrants UserPermission[]
+
+  // Request / work relations
+  submittedMaintenanceRequests   MaintenanceRequest[]       @relation("MaintenanceRequester")
+  submittedSpecificationRequests SpecificationRequest[]     @relation("SpecificationRequester")
+  itemAssignments                ItemTechnician[]           @relation("ItemTechnician")
+  createdAssignments             ItemTechnician[]           @relation("ItemAssignmentCreator")
+  workLogs                       WorkLog[]                  @relation("WorkLogTechnician")
+  rejectedWorkLogs               WorkLog[]                  @relation("WorkLogRejector")
+  requestUpdates                 RequestUpdate[]
+  statusChanges                  RequestStatusHistory[]
+  approvalTechnician             ApprovalRequest[]          @relation("ApprovalTechnician")
+  reviewedApprovals              ApprovalRequest[]          @relation("ApprovalReviewer")
+  uploadedRequestFiles           MaintenanceRequestFile[]   @relation("RequestFileUploader")
+  uploadedSpecificationFiles     SpecificationItemFile[]    @relation("SpecificationFileUploader")
+  uploadedSpecificationReqFiles  SpecificationRequestFile[] @relation("SpecificationRequestFileUploader")
+  passwordHistories              PasswordHistory[]
+  notifications                  UserNotification[]
+
+  @@index([isActive, deletedAt])
+  @@index([organizationUnitId])
+  @@map("users")
+}
+
+model Role {
+  id             String   @id @default(uuid()) @db.Char(36)
+  name           String   @unique @db.VarChar(100)
+  description    String?  @db.Text
+  dashboardRoute String?  @map("dashboard_route") @db.VarChar(255)
+  isActive       Boolean  @default(true) @map("is_active")
+  createdAt      DateTime @default(now()) @map("created_at") @db.Timestamp(3)
+  updatedAt      DateTime @updatedAt @map("updated_at") @db.Timestamp(3)
+
+  users       UserRole[]
+  permissions RolePermission[]
+
+  @@map("roles")
+}
+
+model Permission {
+  id          String   @id @default(uuid()) @db.Char(36)
+  name        String   @unique @db.VarChar(150)
+  resource    String?  @db.VarChar(100)
+  description String?  @db.Text
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamp(3)
+  updatedAt   DateTime @updatedAt @map("updated_at") @db.Timestamp(3)
+
+  roles RolePermission[]
+  users UserPermission[]
+
+  @@map("permissions")
+}
+
+model UserRole {
+  userId     String   @map("user_id") @db.Char(36)
+  roleId     String   @map("role_id") @db.Char(36)
+  assignedAt DateTime @default(now()) @map("assigned_at") @db.Timestamp(3)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role Role @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  @@id([userId, roleId])
+  @@index([roleId])
+  @@map("user_roles")
+}
+
+model RolePermission {
+  roleId       String   @map("role_id") @db.Char(36)
+  permissionId String   @map("permission_id") @db.Char(36)
+  grantedAt    DateTime @default(now()) @map("granted_at") @db.Timestamp(3)
+
+  role       Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@id([roleId, permissionId])
+  @@index([permissionId])
+  @@map("role_permissions")
+}
+
+model UserPermission {
+  userId       String   @map("user_id") @db.Char(36)
+  permissionId String   @map("permission_id") @db.Char(36)
+  grantedAt    DateTime @default(now()) @map("granted_at") @db.Timestamp(3)
+
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  permission Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@id([userId, permissionId])
+  @@index([permissionId])
+  @@map("user_permissions")
+}
+
+// ─────────────────────────────────────────────
+// ORGANIZATION (tree, one user per node, one supervisor per node)
+// ─────────────────────────────────────────────
+model OrganizationUnit {
+  id          String  @id @default(uuid()) @db.Char(36)
+  name        String  @db.VarChar(160)
+  code        String? @unique @db.VarChar(80)
+  unitType    String? @map("unit_type") @db.VarChar(80)
+  description String? @db.Text
+  parentId    String? @map("parent_id") @db.Char(36)
+  isActive    Boolean @default(true) @map("is_active")
+
+  // ONE supervisor per node
+  supervisorId String? @unique @map("supervisor_id") @db.Char(36)
+
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamp(3)
+  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamp(3)
+  deletedAt DateTime? @map("deleted_at") @db.Timestamp(3)
+
+  parent   OrganizationUnit?  @relation("OrganizationTree", fields: [parentId], references: [id], onDelete: SetNull)
+  children OrganizationUnit[] @relation("OrganizationTree")
+
+  supervisor User? @relation("UnitSupervisor", fields: [supervisorId], references: [id], onDelete: SetNull)
+
+  // ONE user belongs to this node (a node can have many users)
+  members User[] @relation("UserPrimaryNode")
+
+  @@unique([parentId, name])
+  @@index([parentId, isActive])
+  @@map("organization_units")
+}
+
+model OrganizationUnitType {
+  id          String   @id @default(uuid()) @db.Char(36)
+  name        String   @unique @db.VarChar(80)
+  code        String?  @unique @db.VarChar(40)
+  description String?  @db.Text
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamp(3)
+  updatedAt   DateTime @updatedAt @map("updated_at") @db.Timestamp(3)
+
+  @@map("organization_unit_types")
+}
+
+// ─────────────────────────────────────────────
+// ITEM CATALOG
+// ─────────────────────────────────────────────
+model ItemCategory {
+  id          String   @id @default(uuid()) @db.Char(36)
+  name        String   @unique @db.VarChar(120)
+  description String?  @db.Text
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamp(3)
+  updatedAt   DateTime @updatedAt @map("updated_at") @db.Timestamp(3)
+
+  items              Item[]
+  specificationItems SpecificationItem[]
+
+  @@map("item_categories")
+}
+
+model Item {
+  id            String     @id @default(uuid()) @db.Char(36)
+  categoryId    String?    @map("category_id") @db.Char(36)
+  name          String     @db.VarChar(180)
+  unitOfMeasure String     @map("unit_of_measure") @db.VarChar(50)
+  status        ItemStatus @default(ACTIVE)
+  createdAt     DateTime   @default(now()) @map("created_at") @db.Timestamp(3)
+  updatedAt     DateTime   @updatedAt @map("updated_at") @db.Timestamp(3)
+  deletedAt     DateTime?  @map("deleted_at") @db.Timestamp(3)
+
+  category     ItemCategory?            @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  requestItems MaintenanceRequestItem[]
+
+  @@index([categoryId, status])
+  @@index([name])
+  @@map("items")
+}
+
+model IssueCategory {
+  id          String    @id @default(uuid()) @db.Char(36)
+  name        String    @unique @db.VarChar(120)
+  slug        String    @unique @db.VarChar(140)
+  description String?   @db.Text
+  isActive    Boolean   @default(true) @map("is_active")
+  createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamp(3)
+  updatedAt   DateTime  @updatedAt @map("updated_at") @db.Timestamp(3)
+  deletedAt   DateTime? @map("deleted_at") @db.Timestamp(3)
+
+  issueTypes   IssueType[]
+  requestItems MaintenanceRequestItem[]
+
+  @@map("issue_categories")
+}
+
+model IssueType {
+  id              String    @id @default(uuid()) @db.Char(36)
+  issueCategoryId String?   @map("issue_category_id") @db.Char(36)
+  name            String    @db.VarChar(120)
+  slug            String    @unique @db.VarChar(140)
+  description     String?   @db.Text
+  isActive        Boolean   @default(true) @map("is_active")
+  needsApproval   Boolean   @default(false) @map("needs_approval")
+  createdAt       DateTime  @default(now()) @map("created_at") @db.Timestamp(3)
+  updatedAt       DateTime  @updatedAt @map("updated_at") @db.Timestamp(3)
+  deletedAt       DateTime? @map("deleted_at") @db.Timestamp(3)
+
+  category     IssueCategory?           @relation(fields: [issueCategoryId], references: [id], onDelete: SetNull)
+  requestItems MaintenanceRequestItem[]
+
+  @@index([issueCategoryId, isActive])
+  @@map("issue_types")
+}
+
+// ─────────────────────────────────────────────
+// MAINTENANCE REQUEST → ITEMS → TECHNICIANS PER ITEM
+// ─────────────────────────────────────────────
+model MaintenanceRequest {
+  id              String          @id @default(uuid()) @db.Char(36)
+  ticketNumber    String          @unique @map("ticket_number") @db.VarChar(40)
+  requesterId     String?         @map("requester_id") @db.Char(36)
+  priority        RequestPriority @default(MEDIUM)
+  status          RequestStatus   @default(PENDING)
+  title           String?         @db.VarChar(200)
+  description     String?         @db.Text
+  rejectionReason String?         @map("rejection_reason") @db.Text
+  requestedAt     DateTime        @default(now()) @map("requested_at") @db.Timestamp(3)
+  createdAt       DateTime        @default(now()) @map("created_at") @db.Timestamp(3)
+  updatedAt       DateTime        @updatedAt @map("updated_at") @db.Timestamp(3)
+  deletedAt       DateTime?       @map("deleted_at") @db.Timestamp(3)
+
+  requester User? @relation("MaintenanceRequester", fields: [requesterId], references: [id], onDelete: SetNull)
+
+  items            MaintenanceRequestItem[]
+  workLogs         WorkLog[]
+  approvalRequests ApprovalRequest[]
+  statusHistory    RequestStatusHistory[]
+  updates          RequestUpdate[]
+  files            MaintenanceRequestFile[]
+
+  @@index([requesterId, createdAt])
+  @@index([status, priority, requestedAt])
+  @@map("maintenance_requests")
+}
+
+// One request → many items
+model MaintenanceRequestItem {
+  id                   String          @id @default(uuid()) @db.Char(36)
+  maintenanceRequestId String          @map("maintenance_request_id") @db.Char(36)
+  itemId               String          @map("item_id") @db.Char(36)
+  issueCategoryId      String?         @map("issue_category_id") @db.Char(36)
+  issueTypeId          String          @map("issue_type_id") @db.Char(36)
+  priority             RequestPriority @default(MEDIUM)
+  description          String?         @db.Text
+  createdAt            DateTime        @default(now()) @map("created_at") @db.Timestamp(3)
+  updatedAt            DateTime        @updatedAt @map("updated_at") @db.Timestamp(3)
+  deletedAt            DateTime?       @map("deleted_at") @db.Timestamp(3)
+
+  maintenanceRequest MaintenanceRequest @relation(fields: [maintenanceRequestId], references: [id], onDelete: Cascade)
+  item               Item               @relation(fields: [itemId], references: [id], onDelete: Restrict)
+  issueCategory      IssueCategory?     @relation(fields: [issueCategoryId], references: [id], onDelete: SetNull)
+  issueType          IssueType          @relation(fields: [issueTypeId], references: [id], onDelete: Restrict)
+
+  // Many technicians per item
+  technicians ItemTechnician[]
+
+  workLogEntries   WorkLogItem[]
+  approvalRequests ApprovalRequest[]
+
+  @@unique([maintenanceRequestId, itemId, issueTypeId])
+  @@index([itemId])
+  @@index([issueCategoryId])
+  @@index([issueTypeId])
+  @@map("maintenance_request_items")
+}
+
+// Join: one item ↔ many technicians (and a technician can serve many items)
+model ItemTechnician {
+  id               String                     @id @default(uuid()) @db.Char(36)
+  requestItemId    String                     @map("request_item_id") @db.Char(36)
+  technicianId     String                     @map("technician_id") @db.Char(36)
+  assignedById     String?                    @map("assigned_by_id") @db.Char(36)
+  status           TechnicianAssignmentStatus @default(ASSIGNED)
+  isLead           Boolean                    @default(false) @map("is_lead")
+  roleInAssignment AssignmentRole             @default(ASSISTANT) @map("role_in_assignment")
+  notes            String?                    @db.Text
+  assignedAt       DateTime                   @default(now()) @map("assigned_at") @db.Timestamp(3)
+  startedAt        DateTime?                  @map("started_at") @db.Timestamp(3)
+  completedAt      DateTime?                  @map("completed_at") @db.Timestamp(3)
+  createdAt        DateTime                   @default(now()) @map("created_at") @db.Timestamp(3)
+  updatedAt        DateTime                   @updatedAt @map("updated_at") @db.Timestamp(3)
+
+  requestItem MaintenanceRequestItem @relation(fields: [requestItemId], references: [id], onDelete: Cascade)
+  technician  User                   @relation("ItemTechnician", fields: [technicianId], references: [id], onDelete: Restrict)
+  assignedBy  User?                  @relation("ItemAssignmentCreator", fields: [assignedById], references: [id], onDelete: SetNull)
+  workLogs    WorkLog[]              @relation("TechnicianAssignmentWorkLogs")
+
+  @@unique([requestItemId, technicianId])
+  @@index([technicianId, status])
+  @@index([requestItemId, status])
+  @@index([requestItemId, isLead])
+  @@index([assignedById])
+  @@map("item_technicians")
+}
+
+// ─────────────────────────────────────────────
+// SPECIFICATION REQUEST → SPECIFICATION ITEMS
+// ─────────────────────────────────────────────
+model SpecificationRequest {
+  id              String          @id @default(uuid()) @db.Char(36)
+  ticketNumber    String          @unique @map("ticket_number") @db.VarChar(40)
+  requesterId     String?         @map("requester_id") @db.Char(36)
+  priority        RequestPriority @default(MEDIUM)
+  status          RequestStatus   @default(PENDING)
+  title           String?         @db.VarChar(200)
+  description     String?         @db.Text
+  rejectionReason String?         @map("rejection_reason") @db.Text
+  requestedAt     DateTime        @default(now()) @map("requested_at") @db.Timestamp(3)
+  createdAt       DateTime        @default(now()) @map("created_at") @db.Timestamp(3)
+  updatedAt       DateTime        @updatedAt @map("updated_at") @db.Timestamp(3)
+  deletedAt       DateTime?       @map("deleted_at") @db.Timestamp(3)
+
+  requester User? @relation("SpecificationRequester", fields: [requesterId], references: [id], onDelete: SetNull)
+
+  items SpecificationItem[]
+  files SpecificationRequestFile[]
+
+  @@index([requesterId, createdAt])
+  @@index([status, priority, requestedAt])
+  @@map("specification_requests")
+}
+
+model SpecificationItem {
+  id                     String          @id @default(uuid()) @db.Char(36)
+  specificationRequestId String          @map("specification_request_id") @db.Char(36)
+  categoryId             String?         @map("category_id") @db.Char(36)
+  requestedItemName      String          @map("requested_item_name") @db.VarChar(180)
+  quantity               Int             @default(1)
+  unitOfMeasure          String?         @map("unit_of_measure") @db.VarChar(50)
+  priority               RequestPriority @default(MEDIUM)
+  description            String?         @db.Text
+  createdAt              DateTime        @default(now()) @map("created_at") @db.Timestamp(3)
+  updatedAt              DateTime        @updatedAt @map("updated_at") @db.Timestamp(3)
+  deletedAt              DateTime?       @map("deleted_at") @db.Timestamp(3)
+
+  specificationRequest SpecificationRequest    @relation(fields: [specificationRequestId], references: [id], onDelete: Cascade)
+  category             ItemCategory?           @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  files                SpecificationItemFile[]
+
+  @@index([specificationRequestId])
+  @@index([categoryId])
+  @@map("specification_items")
+}
+
+model SpecificationRequestFile {
+  id                     String   @id @default(uuid()) @db.Char(36)
+  specificationRequestId String   @map("specification_request_id") @db.Char(36)
+  uploadedById           String?  @map("uploaded_by_id") @db.Char(36)
+  fileName               String   @map("file_name") @db.VarChar(255)
+  originalName           String   @map("original_name") @db.VarChar(255)
+  mimeType               String   @map("mime_type") @db.VarChar(150)
+  storageKey             String   @unique @map("storage_key") @db.VarChar(500)
+  fileType               String   @map("file_type") @db.VarChar(60)
+  sizeBytes              BigInt   @map("size_bytes")
+  createdAt              DateTime @default(now()) @map("created_at") @db.Timestamp(3)
+
+  request    SpecificationRequest @relation(fields: [specificationRequestId], references: [id], onDelete: Cascade)
+  uploadedBy User?                @relation("SpecificationRequestFileUploader", fields: [uploadedById], references: [id], onDelete: SetNull)
+
+  @@index([specificationRequestId, createdAt])
+  @@index([uploadedById])
+  @@map("specification_request_files")
+}
+
+// ─────────────────────────────────────────────
+// WORK LOGS
+// ─────────────────────────────────────────────
+model WorkLog {
+  id               String        @id @default(uuid()) @db.Char(36)
+  requestId        String        @map("request_id") @db.Char(36)
+  technicianId     String        @map("technician_id") @db.Char(36)
+  workDone         String        @map("work_done") @db.Text
+  completionNotes  String?       @map("completion_notes") @db.Text
+  timeSpentMinutes Int?          @map("time_spent_minutes")
+  logDate          DateTime      @default(now()) @map("log_date") @db.Timestamp(3)
+  status           WorkLogStatus @default(PENDING)
+  rejectedAt       DateTime?     @map("rejected_at") @db.Timestamp(3)
+  rejectedById     String?       @map("rejected_by_id") @db.Char(36)
+  rejectionReason  String?       @map("rejection_reason") @db.Text
+  itemTechnicianId String?       @map("item_technician_id") @db.Char(36)
+  createdAt        DateTime      @default(now()) @map("created_at") @db.Timestamp(3)
+  updatedAt        DateTime      @updatedAt @map("updated_at") @db.Timestamp(3)
+
+  request        MaintenanceRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  technician     User               @relation("WorkLogTechnician", fields: [technicianId], references: [id], onDelete: Restrict)
+  rejectedBy     User?              @relation("WorkLogRejector", fields: [rejectedById], references: [id], onDelete: SetNull)
+  itemTechnician ItemTechnician?    @relation("TechnicianAssignmentWorkLogs", fields: [itemTechnicianId], references: [id], onDelete: SetNull)
+
+  items     WorkLogItem[]
+  materials WorkLogMaterial[]
+
+  @@index([requestId, logDate])
+  @@index([technicianId, logDate])
+  @@index([itemTechnicianId])
+  @@index([rejectedById])
+  @@map("work_logs")
+}
+
+model WorkLogItem {
+  workLogId     String  @map("work_log_id") @db.Char(36)
+  requestItemId String  @map("request_item_id") @db.Char(36)
+  notes         String? @db.Text
+
+  workLog WorkLog                @relation(fields: [workLogId], references: [id], onDelete: Cascade)
+  item    MaintenanceRequestItem @relation(fields: [requestItemId], references: [id], onDelete: Cascade)
+
+  @@id([workLogId, requestItemId])
+  @@index([requestItemId])
+  @@map("work_log_items")
+}
+
+model WorkLogMaterial {
+  id        String   @id @default(uuid()) @db.Char(36)
+  workLogId String   @map("work_log_id") @db.Char(36)
+  name      String   @db.VarChar(180)
+  quantity  Decimal? @db.Decimal(10, 2)
+  unit      String?  @db.VarChar(50)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamp(3)
+
+  workLog WorkLog @relation(fields: [workLogId], references: [id], onDelete: Cascade)
+
+  @@index([workLogId])
+  @@map("work_log_materials")
+}
+
+// ─────────────────────────────────────────────
+// APPROVALS, STATUS HISTORY, UPDATES, FILES, NOTIFICATIONS
+// ─────────────────────────────────────────────
+model ApprovalRequest {
+  id                       String         @id @default(uuid()) @db.Char(36)
+  maintenanceRequestId     String         @map("maintenance_request_id") @db.Char(36)
+  maintenanceRequestItemId String?        @map("maintenance_request_item_id") @db.Char(36)
+  technicianId             String?        @map("technician_id") @db.Char(36)
+  reviewedById             String?        @map("reviewed_by_id") @db.Char(36)
+  status                   ApprovalStatus @default(PENDING)
+  notes                    String?        @db.Text
+  forwardedAt              DateTime?      @map("forwarded_at") @db.Timestamp(3)
+  reviewedAt               DateTime?      @map("reviewed_at") @db.Timestamp(3)
+  createdAt                DateTime       @default(now()) @map("created_at") @db.Timestamp(3)
+  updatedAt                DateTime       @updatedAt @map("updated_at") @db.Timestamp(3)
+  deletedAt                DateTime?      @map("deleted_at") @db.Timestamp(3)
+
+  maintenanceRequest MaintenanceRequest      @relation(fields: [maintenanceRequestId], references: [id], onDelete: Cascade)
+  requestItem        MaintenanceRequestItem? @relation(fields: [maintenanceRequestItemId], references: [id], onDelete: SetNull)
+  technician         User?                   @relation("ApprovalTechnician", fields: [technicianId], references: [id], onDelete: SetNull)
+  reviewer           User?                   @relation("ApprovalReviewer", fields: [reviewedById], references: [id], onDelete: SetNull)
+
+  @@index([maintenanceRequestId, status])
+  @@index([maintenanceRequestItemId])
+  @@index([technicianId])
+  @@index([reviewedById])
+  @@map("approval_requests")
+}
+
+model RequestStatusHistory {
+  id                   String         @id @default(uuid()) @db.Char(36)
+  maintenanceRequestId String         @map("maintenance_request_id") @db.Char(36)
+  fromStatus           RequestStatus? @map("from_status")
+  toStatus             RequestStatus  @map("to_status")
+  changedById          String?        @map("changed_by_id") @db.Char(36)
+  reason               String?        @db.Text
+  createdAt            DateTime       @default(now()) @map("created_at") @db.Timestamp(3)
+
+  request   MaintenanceRequest @relation(fields: [maintenanceRequestId], references: [id], onDelete: Cascade)
+  changedBy User?              @relation(fields: [changedById], references: [id], onDelete: SetNull)
+
+  @@index([maintenanceRequestId, createdAt])
+  @@index([changedById])
+  @@map("request_status_history")
+}
+
+model RequestUpdate {
+  id                   String   @id @default(uuid()) @db.Char(36)
+  maintenanceRequestId String   @map("maintenance_request_id") @db.Char(36)
+  userId               String?  @map("user_id") @db.Char(36)
+  updateType           String   @map("update_type") @db.VarChar(60)
+  updateText           String   @map("update_text") @db.Text
+  createdAt            DateTime @default(now()) @map("created_at") @db.Timestamp(3)
+  updatedAt            DateTime @updatedAt @map("updated_at") @db.Timestamp(3)
+
+  request MaintenanceRequest @relation(fields: [maintenanceRequestId], references: [id], onDelete: Cascade)
+  user    User?              @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([maintenanceRequestId, createdAt])
+  @@index([userId])
+  @@map("request_updates")
+}
+
+model MaintenanceRequestFile {
+  id                   String   @id @default(uuid()) @db.Char(36)
+  maintenanceRequestId String   @map("maintenance_request_id") @db.Char(36)
+  uploadedById         String?  @map("uploaded_by_id") @db.Char(36)
+  fileName             String   @map("file_name") @db.VarChar(255)
+  originalName         String   @map("original_name") @db.VarChar(255)
+  mimeType             String   @map("mime_type") @db.VarChar(150)
+  storageKey           String   @unique @map("storage_key") @db.VarChar(500)
+  fileType             String   @map("file_type") @db.VarChar(60)
+  sizeBytes            BigInt   @map("size_bytes")
+  createdAt            DateTime @default(now()) @map("created_at") @db.Timestamp(3)
+
+  request    MaintenanceRequest @relation(fields: [maintenanceRequestId], references: [id], onDelete: Cascade)
+  uploadedBy User?              @relation("RequestFileUploader", fields: [uploadedById], references: [id], onDelete: SetNull)
+
+  @@index([maintenanceRequestId, createdAt])
+  @@index([uploadedById])
+  @@map("maintenance_request_files")
+}
+
+model SpecificationItemFile {
+  id                  String   @id @default(uuid()) @db.Char(36)
+  specificationItemId String   @map("specification_item_id") @db.Char(36)
+  uploadedById        String?  @map("uploaded_by_id") @db.Char(36)
+  fileName            String   @map("file_name") @db.VarChar(255)
+  originalName        String   @map("original_name") @db.VarChar(255)
+  mimeType            String   @map("mime_type") @db.VarChar(150)
+  storageKey          String   @unique @map("storage_key") @db.VarChar(500)
+  sizeBytes           BigInt   @map("size_bytes")
+  createdAt           DateTime @default(now()) @map("created_at") @db.Timestamp(3)
+
+  specificationItem SpecificationItem @relation(fields: [specificationItemId], references: [id], onDelete: Cascade)
+  uploadedBy        User?             @relation("SpecificationFileUploader", fields: [uploadedById], references: [id], onDelete: SetNull)
+
+  @@index([specificationItemId, createdAt])
+  @@index([uploadedById])
+  @@map("specification_item_files")
+}
+
+model PasswordHistory {
+  id           String   @id @default(uuid()) @db.Char(36)
+  userId       String   @map("user_id") @db.Char(36)
+  passwordHash String   @map("password_hash") @db.VarChar(255)
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamp(3)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@map("password_histories")
+}
+
+model UserNotification {
+  id        String    @id @default(uuid()) @db.Char(36)
+  userId    String    @map("user_id") @db.Char(36)
+  type      String    @db.VarChar(150)
+  payload   Json
+  readAt    DateTime? @map("read_at") @db.Timestamp(3)
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamp(3)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, readAt, createdAt])
+  @@map("user_notifications")
+}

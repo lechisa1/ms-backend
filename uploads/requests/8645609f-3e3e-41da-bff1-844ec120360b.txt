@@ -1,0 +1,2 @@
+Diagnostic report for spindle bearing vibration analysis.
+All tolerances within limits.
