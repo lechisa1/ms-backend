@@ -316,25 +316,24 @@ export declare class SpecificationRequestsService {
     getFile(requestId: string, fileId: string): Promise<{
         id: string;
         createdAt: Date;
-        maintenanceRequestId: string;
-        uploadedById: string | null;
-        fileName: string;
-        originalName: string;
-        mimeType: string;
-        storageKey: string;
-        fileType: string;
-        sizeBytes: bigint;
-    } | {
-        id: string;
-        createdAt: Date;
-        uploadedById: string | null;
-        fileName: string;
-        originalName: string;
-        mimeType: string;
-        storageKey: string;
-        fileType: string;
-        sizeBytes: bigint;
         specificationRequestId: string;
+        uploadedById: string | null;
+        fileName: string;
+        originalName: string;
+        mimeType: string;
+        storageKey: string;
+        sizeBytes: bigint;
+        fileType: string;
+    } | {
+        id: string;
+        createdAt: Date;
+        specificationItemId: string;
+        uploadedById: string | null;
+        fileName: string;
+        originalName: string;
+        mimeType: string;
+        storageKey: string;
+        sizeBytes: bigint;
     } | {
         id: string;
         createdAt: Date;
@@ -344,35 +343,38 @@ export declare class SpecificationRequestsService {
         mimeType: string;
         storageKey: string;
         sizeBytes: bigint;
-        specificationItemId: string;
+        fileType: string;
+        maintenanceRequestId: string;
     }>;
     removeFile(requestId: string, fileId: string): Promise<Prisma.BatchPayload>;
-    remove(id: string): Promise<{
+    remove(id: string, user?: {
         id: string;
+    }): Promise<{
+        id: string;
+        ticketNumber: string;
+        priority: import("@prisma/client").$Enums.RequestPriority;
+        status: import("@prisma/client").$Enums.RequestStatus;
+        title: string | null;
         description: string | null;
+        rejectionReason: string | null;
+        requestedAt: Date;
         createdAt: Date;
         updatedAt: Date;
         deletedAt: Date | null;
-        status: import("@prisma/client").$Enums.RequestStatus;
-        ticketNumber: string;
         requesterId: string | null;
-        priority: import("@prisma/client").$Enums.RequestPriority;
-        title: string | null;
-        rejectionReason: string | null;
-        requestedAt: Date;
     }>;
     restore(id: string): Promise<{
         id: string;
+        ticketNumber: string;
+        priority: import("@prisma/client").$Enums.RequestPriority;
+        status: import("@prisma/client").$Enums.RequestStatus;
+        title: string | null;
         description: string | null;
+        rejectionReason: string | null;
+        requestedAt: Date;
         createdAt: Date;
         updatedAt: Date;
         deletedAt: Date | null;
-        status: import("@prisma/client").$Enums.RequestStatus;
-        ticketNumber: string;
         requesterId: string | null;
-        priority: import("@prisma/client").$Enums.RequestPriority;
-        title: string | null;
-        rejectionReason: string | null;
-        requestedAt: Date;
     }>;
 }

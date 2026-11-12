@@ -102,8 +102,8 @@ let SpecificationRequestsController = class SpecificationRequestsController {
     deleteFile(id, fileId) {
         return this.service.removeFile(id, fileId);
     }
-    remove(id) {
-        return this.service.remove(id);
+    remove(id, user) {
+        return this.service.remove(id, user);
     }
     restore(id) {
         return this.service.restore(id);
@@ -249,11 +249,11 @@ __decorate([
 ], SpecificationRequestsController.prototype, "deleteFile", null);
 __decorate([
     (0, common_1.Delete)(':id'),
-    (0, permissions_decorator_1.RequirePermissions)('requests:delete'),
     (0, swagger_1.ApiOperation)({ summary: 'Soft delete a specification request' }),
     __param(0, (0, common_1.Param)('id', common_1.ParseUUIDPipe)),
+    __param(1, (0, current_user_decorator_1.CurrentUser)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [String, Object]),
     __metadata("design:returntype", void 0)
 ], SpecificationRequestsController.prototype, "remove", null);
 __decorate([

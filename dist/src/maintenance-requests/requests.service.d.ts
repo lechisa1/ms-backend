@@ -34,14 +34,18 @@ export declare class RequestsService {
         } | null;
         organizationUnitId: any;
         organizationUnit: any;
-        items: any;
-        specificationItems: never[];
+        items: never[];
+        specificationItems: any;
         files: any;
-        statusHistory: any;
-        updates: any;
-        workLogs: any;
-        approvalRequests: any;
-        _count: any;
+        statusHistory: never[];
+        updates: never[];
+        workLogs: never[];
+        approvalRequests: never[];
+        _count: {
+            workLogs: number;
+            approvalRequests: number;
+            updates: number;
+        };
     } | {
         id: any;
         ticketNumber: any;
@@ -64,18 +68,14 @@ export declare class RequestsService {
         } | null;
         organizationUnitId: any;
         organizationUnit: any;
-        items: never[];
-        specificationItems: any;
+        items: any;
+        specificationItems: never[];
         files: any;
-        statusHistory: never[];
-        updates: never[];
-        workLogs: never[];
-        approvalRequests: never[];
-        _count: {
-            workLogs: number;
-            approvalRequests: number;
-            updates: number;
-        };
+        statusHistory: any;
+        updates: any;
+        workLogs: any;
+        approvalRequests: any;
+        _count: any;
     } | null>;
     findAll(query: QueryMaintenanceRequestDto): Promise<PaginatedResult<unknown>>;
     getMyTasks(userId: string, query: QueryMyTasksDto): Promise<{
@@ -86,7 +86,7 @@ export declare class RequestsService {
             technicianCount: number;
             totalActiveCount: number;
         };
-        activeRoleView: "TECHNICIAN" | "SUPERVISOR" | "ICT_DIRECTOR" | "ALL";
+        activeRoleView: "SUPERVISOR" | "ICT_DIRECTOR" | "TECHNICIAN" | "ALL";
         userRoles: {
             isSupervisor: boolean;
             isIctDirector: boolean;
@@ -121,14 +121,18 @@ export declare class RequestsService {
         } | null;
         organizationUnitId: any;
         organizationUnit: any;
-        items: any;
-        specificationItems: never[];
+        items: never[];
+        specificationItems: any;
         files: any;
-        statusHistory: any;
-        updates: any;
-        workLogs: any;
-        approvalRequests: any;
-        _count: any;
+        statusHistory: never[];
+        updates: never[];
+        workLogs: never[];
+        approvalRequests: never[];
+        _count: {
+            workLogs: number;
+            approvalRequests: number;
+            updates: number;
+        };
     } | {
         id: any;
         ticketNumber: any;
@@ -151,18 +155,14 @@ export declare class RequestsService {
         } | null;
         organizationUnitId: any;
         organizationUnit: any;
-        items: never[];
-        specificationItems: any;
+        items: any;
+        specificationItems: never[];
         files: any;
-        statusHistory: never[];
-        updates: never[];
-        workLogs: never[];
-        approvalRequests: never[];
-        _count: {
-            workLogs: number;
-            approvalRequests: number;
-            updates: number;
-        };
+        statusHistory: any;
+        updates: any;
+        workLogs: any;
+        approvalRequests: any;
+        _count: any;
     } | null>;
     findByTicketNumber(ticketNumber: string): Promise<{
         id: any;
@@ -186,14 +186,18 @@ export declare class RequestsService {
         } | null;
         organizationUnitId: any;
         organizationUnit: any;
-        items: any;
-        specificationItems: never[];
+        items: never[];
+        specificationItems: any;
         files: any;
-        statusHistory: any;
-        updates: any;
-        workLogs: any;
-        approvalRequests: any;
-        _count: any;
+        statusHistory: never[];
+        updates: never[];
+        workLogs: never[];
+        approvalRequests: never[];
+        _count: {
+            workLogs: number;
+            approvalRequests: number;
+            updates: number;
+        };
     } | {
         id: any;
         ticketNumber: any;
@@ -216,18 +220,14 @@ export declare class RequestsService {
         } | null;
         organizationUnitId: any;
         organizationUnit: any;
-        items: never[];
-        specificationItems: any;
+        items: any;
+        specificationItems: never[];
         files: any;
-        statusHistory: never[];
-        updates: never[];
-        workLogs: never[];
-        approvalRequests: never[];
-        _count: {
-            workLogs: number;
-            approvalRequests: number;
-            updates: number;
-        };
+        statusHistory: any;
+        updates: any;
+        workLogs: any;
+        approvalRequests: any;
+        _count: any;
     } | null>;
     update(id: string, dto: UpdateMaintenanceRequestDto): Promise<{
         id: any;
@@ -251,14 +251,18 @@ export declare class RequestsService {
         } | null;
         organizationUnitId: any;
         organizationUnit: any;
-        items: any;
-        specificationItems: never[];
+        items: never[];
+        specificationItems: any;
         files: any;
-        statusHistory: any;
-        updates: any;
-        workLogs: any;
-        approvalRequests: any;
-        _count: any;
+        statusHistory: never[];
+        updates: never[];
+        workLogs: never[];
+        approvalRequests: never[];
+        _count: {
+            workLogs: number;
+            approvalRequests: number;
+            updates: number;
+        };
     } | {
         id: any;
         ticketNumber: any;
@@ -281,18 +285,14 @@ export declare class RequestsService {
         } | null;
         organizationUnitId: any;
         organizationUnit: any;
-        items: never[];
-        specificationItems: any;
+        items: any;
+        specificationItems: never[];
         files: any;
-        statusHistory: never[];
-        updates: never[];
-        workLogs: never[];
-        approvalRequests: never[];
-        _count: {
-            workLogs: number;
-            approvalRequests: number;
-            updates: number;
-        };
+        statusHistory: any;
+        updates: any;
+        workLogs: any;
+        approvalRequests: any;
+        _count: any;
     } | null>;
     changeStatus(id: string, dto: ChangeStatusDto, changedById?: string): Promise<{
         id: any;
@@ -316,14 +316,18 @@ export declare class RequestsService {
         } | null;
         organizationUnitId: any;
         organizationUnit: any;
-        items: any;
-        specificationItems: never[];
+        items: never[];
+        specificationItems: any;
         files: any;
-        statusHistory: any;
-        updates: any;
-        workLogs: any;
-        approvalRequests: any;
-        _count: any;
+        statusHistory: never[];
+        updates: never[];
+        workLogs: never[];
+        approvalRequests: never[];
+        _count: {
+            workLogs: number;
+            approvalRequests: number;
+            updates: number;
+        };
     } | {
         id: any;
         ticketNumber: any;
@@ -346,18 +350,14 @@ export declare class RequestsService {
         } | null;
         organizationUnitId: any;
         organizationUnit: any;
-        items: never[];
-        specificationItems: any;
+        items: any;
+        specificationItems: never[];
         files: any;
-        statusHistory: never[];
-        updates: never[];
-        workLogs: never[];
-        approvalRequests: never[];
-        _count: {
-            workLogs: number;
-            approvalRequests: number;
-            updates: number;
-        };
+        statusHistory: any;
+        updates: any;
+        workLogs: any;
+        approvalRequests: any;
+        _count: any;
     } | null>;
     private resolveApprovingSupervisorId;
     private checkCanApproveOrReject;
@@ -383,14 +383,18 @@ export declare class RequestsService {
         } | null;
         organizationUnitId: any;
         organizationUnit: any;
-        items: any;
-        specificationItems: never[];
+        items: never[];
+        specificationItems: any;
         files: any;
-        statusHistory: any;
-        updates: any;
-        workLogs: any;
-        approvalRequests: any;
-        _count: any;
+        statusHistory: never[];
+        updates: never[];
+        workLogs: never[];
+        approvalRequests: never[];
+        _count: {
+            workLogs: number;
+            approvalRequests: number;
+            updates: number;
+        };
     } | {
         id: any;
         ticketNumber: any;
@@ -413,18 +417,14 @@ export declare class RequestsService {
         } | null;
         organizationUnitId: any;
         organizationUnit: any;
-        items: never[];
-        specificationItems: any;
+        items: any;
+        specificationItems: never[];
         files: any;
-        statusHistory: never[];
-        updates: never[];
-        workLogs: never[];
-        approvalRequests: never[];
-        _count: {
-            workLogs: number;
-            approvalRequests: number;
-            updates: number;
-        };
+        statusHistory: any;
+        updates: any;
+        workLogs: any;
+        approvalRequests: any;
+        _count: any;
     } | null>;
     reject(id: string, reason: string, changedById?: string): Promise<{
         id: any;
@@ -448,14 +448,18 @@ export declare class RequestsService {
         } | null;
         organizationUnitId: any;
         organizationUnit: any;
-        items: any;
-        specificationItems: never[];
+        items: never[];
+        specificationItems: any;
         files: any;
-        statusHistory: any;
-        updates: any;
-        workLogs: any;
-        approvalRequests: any;
-        _count: any;
+        statusHistory: never[];
+        updates: never[];
+        workLogs: never[];
+        approvalRequests: never[];
+        _count: {
+            workLogs: number;
+            approvalRequests: number;
+            updates: number;
+        };
     } | {
         id: any;
         ticketNumber: any;
@@ -478,18 +482,14 @@ export declare class RequestsService {
         } | null;
         organizationUnitId: any;
         organizationUnit: any;
-        items: never[];
-        specificationItems: any;
+        items: any;
+        specificationItems: never[];
         files: any;
-        statusHistory: never[];
-        updates: never[];
-        workLogs: never[];
-        approvalRequests: never[];
-        _count: {
-            workLogs: number;
-            approvalRequests: number;
-            updates: number;
-        };
+        statusHistory: any;
+        updates: any;
+        workLogs: any;
+        approvalRequests: any;
+        _count: any;
     } | null>;
     confirmCompletion(id: string, notes?: string, userId?: string): Promise<{
         id: any;
@@ -513,14 +513,18 @@ export declare class RequestsService {
         } | null;
         organizationUnitId: any;
         organizationUnit: any;
-        items: any;
-        specificationItems: never[];
+        items: never[];
+        specificationItems: any;
         files: any;
-        statusHistory: any;
-        updates: any;
-        workLogs: any;
-        approvalRequests: any;
-        _count: any;
+        statusHistory: never[];
+        updates: never[];
+        workLogs: never[];
+        approvalRequests: never[];
+        _count: {
+            workLogs: number;
+            approvalRequests: number;
+            updates: number;
+        };
     } | {
         id: any;
         ticketNumber: any;
@@ -543,18 +547,14 @@ export declare class RequestsService {
         } | null;
         organizationUnitId: any;
         organizationUnit: any;
-        items: never[];
-        specificationItems: any;
+        items: any;
+        specificationItems: never[];
         files: any;
-        statusHistory: never[];
-        updates: never[];
-        workLogs: never[];
-        approvalRequests: never[];
-        _count: {
-            workLogs: number;
-            approvalRequests: number;
-            updates: number;
-        };
+        statusHistory: any;
+        updates: any;
+        workLogs: any;
+        approvalRequests: any;
+        _count: any;
     } | null>;
     rejectWork(id: string, reason: string, userId?: string): Promise<{
         id: any;
@@ -578,14 +578,18 @@ export declare class RequestsService {
         } | null;
         organizationUnitId: any;
         organizationUnit: any;
-        items: any;
-        specificationItems: never[];
+        items: never[];
+        specificationItems: any;
         files: any;
-        statusHistory: any;
-        updates: any;
-        workLogs: any;
-        approvalRequests: any;
-        _count: any;
+        statusHistory: never[];
+        updates: never[];
+        workLogs: never[];
+        approvalRequests: never[];
+        _count: {
+            workLogs: number;
+            approvalRequests: number;
+            updates: number;
+        };
     } | {
         id: any;
         ticketNumber: any;
@@ -608,18 +612,14 @@ export declare class RequestsService {
         } | null;
         organizationUnitId: any;
         organizationUnit: any;
-        items: never[];
-        specificationItems: any;
+        items: any;
+        specificationItems: never[];
         files: any;
-        statusHistory: never[];
-        updates: never[];
-        workLogs: never[];
-        approvalRequests: never[];
-        _count: {
-            workLogs: number;
-            approvalRequests: number;
-            updates: number;
-        };
+        statusHistory: any;
+        updates: any;
+        workLogs: any;
+        approvalRequests: any;
+        _count: any;
     } | null>;
     addUpdate(id: string, dto: AddRequestUpdateDto): Promise<{
         id: string;
@@ -667,71 +667,43 @@ export declare class RequestsService {
     getFile(requestId: string, fileId: string): Promise<{
         id: string;
         createdAt: Date;
+        uploadedById: string | null;
+        fileName: string;
+        originalName: string;
+        mimeType: string;
+        storageKey: string;
+        sizeBytes: bigint;
+        fileType: string;
         maintenanceRequestId: string;
-        uploadedById: string | null;
-        fileName: string;
-        originalName: string;
-        mimeType: string;
-        storageKey: string;
-        fileType: string;
-        sizeBytes: bigint;
     } | {
         id: string;
         createdAt: Date;
-        uploadedById: string | null;
-        fileName: string;
-        originalName: string;
-        mimeType: string;
-        storageKey: string;
-        fileType: string;
-        sizeBytes: bigint;
         specificationRequestId: string;
-    } | {
-        id: string;
-        createdAt: Date;
         uploadedById: string | null;
         fileName: string;
         originalName: string;
         mimeType: string;
         storageKey: string;
         sizeBytes: bigint;
+        fileType: string;
+    } | {
+        id: string;
+        createdAt: Date;
         specificationItemId: string;
+        uploadedById: string | null;
+        fileName: string;
+        originalName: string;
+        mimeType: string;
+        storageKey: string;
+        sizeBytes: bigint;
     }>;
     removeFile(requestId: string, fileId: string): Promise<void>;
-    remove(id: string): Promise<{
+    remove(id: string, user?: {
+        id: string;
+    }): Promise<{
         success: boolean;
     }>;
     restore(id: string): Promise<{
-        id: any;
-        ticketNumber: any;
-        requestType: RequestTypeEnum;
-        priority: any;
-        status: any;
-        title: any;
-        description: any;
-        rejectionReason: any;
-        requestedAt: any;
-        createdAt: any;
-        updatedAt: any;
-        requesterId: any;
-        requester: {
-            id: any;
-            fullName: any;
-            email: any;
-            phone: any;
-            organizationUnit: any;
-        } | null;
-        organizationUnitId: any;
-        organizationUnit: any;
-        items: any;
-        specificationItems: never[];
-        files: any;
-        statusHistory: any;
-        updates: any;
-        workLogs: any;
-        approvalRequests: any;
-        _count: any;
-    } | {
         id: any;
         ticketNumber: any;
         requestType: RequestTypeEnum;
@@ -765,5 +737,35 @@ export declare class RequestsService {
             approvalRequests: number;
             updates: number;
         };
+    } | {
+        id: any;
+        ticketNumber: any;
+        requestType: RequestTypeEnum;
+        priority: any;
+        status: any;
+        title: any;
+        description: any;
+        rejectionReason: any;
+        requestedAt: any;
+        createdAt: any;
+        updatedAt: any;
+        requesterId: any;
+        requester: {
+            id: any;
+            fullName: any;
+            email: any;
+            phone: any;
+            organizationUnit: any;
+        } | null;
+        organizationUnitId: any;
+        organizationUnit: any;
+        items: any;
+        specificationItems: never[];
+        files: any;
+        statusHistory: any;
+        updates: any;
+        workLogs: any;
+        approvalRequests: any;
+        _count: any;
     } | null>;
 }

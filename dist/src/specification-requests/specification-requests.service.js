@@ -462,8 +462,27 @@ let SpecificationRequestsService = SpecificationRequestsService_1 = class Specif
             where: { id: fileId, specificationRequestId: requestId },
         });
     }
-    async remove(id) {
-        await this.findOne(id);
+    async remove(id, user) {
+        const spec = await this.prisma.specificationRequest.findFirst({
+            where: { id, deletedAt: null },
+            select: { id: true, requesterId: true, status: true },
+        });
+        if (!spec) {
+            throw new common_1.NotFoundException(`Specification request ${id} not found`);
+        }
+        if (user) {
+            if (!spec.requesterId || spec.requesterId !== user.id) {
+                throw new common_1.ForbiddenException('Only the creator of this request can delete it');
+            }
+            const deletableStatuses = [
+                client_1.RequestStatus.PENDING,
+                client_1.RequestStatus.WAITING_APPROVAL,
+                client_1.RequestStatus.PENDING_APPROVAL_REVIEW,
+            ];
+            if (!deletableStatuses.includes(spec.status)) {
+                throw new common_1.BadRequestException('Cannot delete request once review, assignment or procurement actions have started');
+            }
+        }
         return this.prisma.specificationRequest.update({
             where: { id },
             data: { deletedAt: new Date() },

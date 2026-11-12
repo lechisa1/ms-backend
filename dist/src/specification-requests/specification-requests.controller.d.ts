@@ -2,6 +2,7 @@ import type { Response } from 'express';
 import { SpecificationRequestsService } from './specification-requests.service';
 import { CreateSpecificationRequestDto } from './dto/create-specification-request.dto';
 import { ApproveSpecificationRequestDto, ChangeSpecificationStatusDto, QuerySpecificationRequestDto, RejectSpecificationRequestDto, UpdateSpecificationRequestDto } from './dto/update-specification-request.dto';
+import type { AuthUser } from '../common/interfaces/auth-user.interface';
 export declare class SpecificationRequestsController {
     private readonly service;
     constructor(service: SpecificationRequestsService);
@@ -277,32 +278,32 @@ export declare class SpecificationRequestsController {
     downloadFile(id: string, fileId: string, res: Response): Promise<void>;
     downloadFileDirect(fileId: string, res: Response): Promise<void>;
     deleteFile(id: string, fileId: string): Promise<import("@prisma/client").Prisma.BatchPayload>;
-    remove(id: string): Promise<{
+    remove(id: string, user: AuthUser): Promise<{
         id: string;
+        ticketNumber: string;
+        priority: import("@prisma/client").$Enums.RequestPriority;
+        status: import("@prisma/client").$Enums.RequestStatus;
+        title: string | null;
         description: string | null;
+        rejectionReason: string | null;
+        requestedAt: Date;
         createdAt: Date;
         updatedAt: Date;
         deletedAt: Date | null;
-        status: import("@prisma/client").$Enums.RequestStatus;
-        ticketNumber: string;
         requesterId: string | null;
-        priority: import("@prisma/client").$Enums.RequestPriority;
-        title: string | null;
-        rejectionReason: string | null;
-        requestedAt: Date;
     }>;
     restore(id: string): Promise<{
         id: string;
+        ticketNumber: string;
+        priority: import("@prisma/client").$Enums.RequestPriority;
+        status: import("@prisma/client").$Enums.RequestStatus;
+        title: string | null;
         description: string | null;
+        rejectionReason: string | null;
+        requestedAt: Date;
         createdAt: Date;
         updatedAt: Date;
         deletedAt: Date | null;
-        status: import("@prisma/client").$Enums.RequestStatus;
-        ticketNumber: string;
         requesterId: string | null;
-        priority: import("@prisma/client").$Enums.RequestPriority;
-        title: string | null;
-        rejectionReason: string | null;
-        requestedAt: Date;
     }>;
 }

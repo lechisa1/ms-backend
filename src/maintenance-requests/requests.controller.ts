@@ -41,6 +41,7 @@ import { SpecificationItemsService } from '../specification-items/specification-
 import { RequirePermissions } from '../common/decorators/permissions.decorator';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
 import { Public } from '../common/decorators/public.decorator';
+import type { AuthUser } from '../common/interfaces/auth-user.interface';
 import { findFileOnDisk, getUploadDestination } from '../common/utils/file-upload.util';
 
 const uploadOptions = {
@@ -275,10 +276,12 @@ export class RequestsController {
   }
 
   @Delete(':id')
-  @RequirePermissions('requests:delete')
   @ApiOperation({ summary: 'Soft delete a request' })
-  remove(@Param('id', ParseUUIDPipe) id: string) {
-    return this.requestsService.remove(id);
+  remove(
+    @Param('id', ParseUUIDPipe) id: string,
+    @CurrentUser() user: AuthUser,
+  ) {
+    return this.requestsService.remove(id, user);
   }
 
   @Post(':id/restore')

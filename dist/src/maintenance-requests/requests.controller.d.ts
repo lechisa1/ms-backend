@@ -4,41 +4,12 @@ import { CreateMaintenanceRequestDto } from './dto/create-request.dto';
 import { AddRequestUpdateDto, ChangeStatusDto, QueryMaintenanceRequestDto, UpdateMaintenanceRequestDto } from './dto/update-request.dto';
 import { QueryMyTasksDto } from './dto/query-my-tasks.dto';
 import { SpecificationItemsService } from '../specification-items/specification-items.service';
+import type { AuthUser } from '../common/interfaces/auth-user.interface';
 export declare class RequestsController {
     private readonly requestsService;
     private readonly specificationItemsService;
     constructor(requestsService: RequestsService, specificationItemsService: SpecificationItemsService);
     create(dto: CreateMaintenanceRequestDto, userId?: string): Promise<{
-        id: any;
-        ticketNumber: any;
-        requestType: import("./dto/create-request.dto").RequestTypeEnum;
-        priority: any;
-        status: any;
-        title: any;
-        description: any;
-        rejectionReason: any;
-        requestedAt: any;
-        createdAt: any;
-        updatedAt: any;
-        requesterId: any;
-        requester: {
-            id: any;
-            fullName: any;
-            email: any;
-            phone: any;
-            organizationUnit: any;
-        } | null;
-        organizationUnitId: any;
-        organizationUnit: any;
-        items: any;
-        specificationItems: never[];
-        files: any;
-        statusHistory: any;
-        updates: any;
-        workLogs: any;
-        approvalRequests: any;
-        _count: any;
-    } | {
         id: any;
         ticketNumber: any;
         requestType: import("./dto/create-request.dto").RequestTypeEnum;
@@ -72,6 +43,36 @@ export declare class RequestsController {
             approvalRequests: number;
             updates: number;
         };
+    } | {
+        id: any;
+        ticketNumber: any;
+        requestType: import("./dto/create-request.dto").RequestTypeEnum;
+        priority: any;
+        status: any;
+        title: any;
+        description: any;
+        rejectionReason: any;
+        requestedAt: any;
+        createdAt: any;
+        updatedAt: any;
+        requesterId: any;
+        requester: {
+            id: any;
+            fullName: any;
+            email: any;
+            phone: any;
+            organizationUnit: any;
+        } | null;
+        organizationUnitId: any;
+        organizationUnit: any;
+        items: any;
+        specificationItems: never[];
+        files: any;
+        statusHistory: any;
+        updates: any;
+        workLogs: any;
+        approvalRequests: any;
+        _count: any;
     } | null>;
     findAll(query: QueryMaintenanceRequestDto): Promise<import("../common/dto/paginated-result.dto").PaginatedResult<unknown>>;
     stats(query: QueryMaintenanceRequestDto): Promise<{
@@ -93,7 +94,7 @@ export declare class RequestsController {
             technicianCount: number;
             totalActiveCount: number;
         };
-        activeRoleView: "TECHNICIAN" | "SUPERVISOR" | "ICT_DIRECTOR" | "ALL";
+        activeRoleView: "SUPERVISOR" | "ICT_DIRECTOR" | "TECHNICIAN" | "ALL";
         userRoles: {
             isSupervisor: boolean;
             isIctDirector: boolean;
@@ -128,14 +129,18 @@ export declare class RequestsController {
         } | null;
         organizationUnitId: any;
         organizationUnit: any;
-        items: any;
-        specificationItems: never[];
+        items: never[];
+        specificationItems: any;
         files: any;
-        statusHistory: any;
-        updates: any;
-        workLogs: any;
-        approvalRequests: any;
-        _count: any;
+        statusHistory: never[];
+        updates: never[];
+        workLogs: never[];
+        approvalRequests: never[];
+        _count: {
+            workLogs: number;
+            approvalRequests: number;
+            updates: number;
+        };
     } | {
         id: any;
         ticketNumber: any;
@@ -158,18 +163,14 @@ export declare class RequestsController {
         } | null;
         organizationUnitId: any;
         organizationUnit: any;
-        items: never[];
-        specificationItems: any;
+        items: any;
+        specificationItems: never[];
         files: any;
-        statusHistory: never[];
-        updates: never[];
-        workLogs: never[];
-        approvalRequests: never[];
-        _count: {
-            workLogs: number;
-            approvalRequests: number;
-            updates: number;
-        };
+        statusHistory: any;
+        updates: any;
+        workLogs: any;
+        approvalRequests: any;
+        _count: any;
     } | null>;
     findOne(id: string): Promise<{
         id: any;
@@ -193,14 +194,18 @@ export declare class RequestsController {
         } | null;
         organizationUnitId: any;
         organizationUnit: any;
-        items: any;
-        specificationItems: never[];
+        items: never[];
+        specificationItems: any;
         files: any;
-        statusHistory: any;
-        updates: any;
-        workLogs: any;
-        approvalRequests: any;
-        _count: any;
+        statusHistory: never[];
+        updates: never[];
+        workLogs: never[];
+        approvalRequests: never[];
+        _count: {
+            workLogs: number;
+            approvalRequests: number;
+            updates: number;
+        };
     } | {
         id: any;
         ticketNumber: any;
@@ -223,18 +228,14 @@ export declare class RequestsController {
         } | null;
         organizationUnitId: any;
         organizationUnit: any;
-        items: never[];
-        specificationItems: any;
+        items: any;
+        specificationItems: never[];
         files: any;
-        statusHistory: never[];
-        updates: never[];
-        workLogs: never[];
-        approvalRequests: never[];
-        _count: {
-            workLogs: number;
-            approvalRequests: number;
-            updates: number;
-        };
+        statusHistory: any;
+        updates: any;
+        workLogs: any;
+        approvalRequests: any;
+        _count: any;
     } | null>;
     update(id: string, dto: UpdateMaintenanceRequestDto): Promise<{
         id: any;
@@ -258,14 +259,18 @@ export declare class RequestsController {
         } | null;
         organizationUnitId: any;
         organizationUnit: any;
-        items: any;
-        specificationItems: never[];
+        items: never[];
+        specificationItems: any;
         files: any;
-        statusHistory: any;
-        updates: any;
-        workLogs: any;
-        approvalRequests: any;
-        _count: any;
+        statusHistory: never[];
+        updates: never[];
+        workLogs: never[];
+        approvalRequests: never[];
+        _count: {
+            workLogs: number;
+            approvalRequests: number;
+            updates: number;
+        };
     } | {
         id: any;
         ticketNumber: any;
@@ -288,18 +293,14 @@ export declare class RequestsController {
         } | null;
         organizationUnitId: any;
         organizationUnit: any;
-        items: never[];
-        specificationItems: any;
+        items: any;
+        specificationItems: never[];
         files: any;
-        statusHistory: never[];
-        updates: never[];
-        workLogs: never[];
-        approvalRequests: never[];
-        _count: {
-            workLogs: number;
-            approvalRequests: number;
-            updates: number;
-        };
+        statusHistory: any;
+        updates: any;
+        workLogs: any;
+        approvalRequests: any;
+        _count: any;
     } | null>;
     changeStatus(id: string, dto: ChangeStatusDto, userId?: string): Promise<{
         id: any;
@@ -323,14 +324,18 @@ export declare class RequestsController {
         } | null;
         organizationUnitId: any;
         organizationUnit: any;
-        items: any;
-        specificationItems: never[];
+        items: never[];
+        specificationItems: any;
         files: any;
-        statusHistory: any;
-        updates: any;
-        workLogs: any;
-        approvalRequests: any;
-        _count: any;
+        statusHistory: never[];
+        updates: never[];
+        workLogs: never[];
+        approvalRequests: never[];
+        _count: {
+            workLogs: number;
+            approvalRequests: number;
+            updates: number;
+        };
     } | {
         id: any;
         ticketNumber: any;
@@ -353,18 +358,14 @@ export declare class RequestsController {
         } | null;
         organizationUnitId: any;
         organizationUnit: any;
-        items: never[];
-        specificationItems: any;
+        items: any;
+        specificationItems: never[];
         files: any;
-        statusHistory: never[];
-        updates: never[];
-        workLogs: never[];
-        approvalRequests: never[];
-        _count: {
-            workLogs: number;
-            approvalRequests: number;
-            updates: number;
-        };
+        statusHistory: any;
+        updates: any;
+        workLogs: any;
+        approvalRequests: any;
+        _count: any;
     } | null>;
     approve(id: string, dto: {
         notes?: string;
@@ -390,14 +391,18 @@ export declare class RequestsController {
         } | null;
         organizationUnitId: any;
         organizationUnit: any;
-        items: any;
-        specificationItems: never[];
+        items: never[];
+        specificationItems: any;
         files: any;
-        statusHistory: any;
-        updates: any;
-        workLogs: any;
-        approvalRequests: any;
-        _count: any;
+        statusHistory: never[];
+        updates: never[];
+        workLogs: never[];
+        approvalRequests: never[];
+        _count: {
+            workLogs: number;
+            approvalRequests: number;
+            updates: number;
+        };
     } | {
         id: any;
         ticketNumber: any;
@@ -420,18 +425,14 @@ export declare class RequestsController {
         } | null;
         organizationUnitId: any;
         organizationUnit: any;
-        items: never[];
-        specificationItems: any;
+        items: any;
+        specificationItems: never[];
         files: any;
-        statusHistory: never[];
-        updates: never[];
-        workLogs: never[];
-        approvalRequests: never[];
-        _count: {
-            workLogs: number;
-            approvalRequests: number;
-            updates: number;
-        };
+        statusHistory: any;
+        updates: any;
+        workLogs: any;
+        approvalRequests: any;
+        _count: any;
     } | null>;
     reject(id: string, dto: {
         reason: string;
@@ -457,14 +458,18 @@ export declare class RequestsController {
         } | null;
         organizationUnitId: any;
         organizationUnit: any;
-        items: any;
-        specificationItems: never[];
+        items: never[];
+        specificationItems: any;
         files: any;
-        statusHistory: any;
-        updates: any;
-        workLogs: any;
-        approvalRequests: any;
-        _count: any;
+        statusHistory: never[];
+        updates: never[];
+        workLogs: never[];
+        approvalRequests: never[];
+        _count: {
+            workLogs: number;
+            approvalRequests: number;
+            updates: number;
+        };
     } | {
         id: any;
         ticketNumber: any;
@@ -487,18 +492,14 @@ export declare class RequestsController {
         } | null;
         organizationUnitId: any;
         organizationUnit: any;
-        items: never[];
-        specificationItems: any;
+        items: any;
+        specificationItems: never[];
         files: any;
-        statusHistory: never[];
-        updates: never[];
-        workLogs: never[];
-        approvalRequests: never[];
-        _count: {
-            workLogs: number;
-            approvalRequests: number;
-            updates: number;
-        };
+        statusHistory: any;
+        updates: any;
+        workLogs: any;
+        approvalRequests: any;
+        _count: any;
     } | null>;
     confirmCompletion(id: string, dto: {
         notes?: string;
@@ -524,14 +525,18 @@ export declare class RequestsController {
         } | null;
         organizationUnitId: any;
         organizationUnit: any;
-        items: any;
-        specificationItems: never[];
+        items: never[];
+        specificationItems: any;
         files: any;
-        statusHistory: any;
-        updates: any;
-        workLogs: any;
-        approvalRequests: any;
-        _count: any;
+        statusHistory: never[];
+        updates: never[];
+        workLogs: never[];
+        approvalRequests: never[];
+        _count: {
+            workLogs: number;
+            approvalRequests: number;
+            updates: number;
+        };
     } | {
         id: any;
         ticketNumber: any;
@@ -554,18 +559,14 @@ export declare class RequestsController {
         } | null;
         organizationUnitId: any;
         organizationUnit: any;
-        items: never[];
-        specificationItems: any;
+        items: any;
+        specificationItems: never[];
         files: any;
-        statusHistory: never[];
-        updates: never[];
-        workLogs: never[];
-        approvalRequests: never[];
-        _count: {
-            workLogs: number;
-            approvalRequests: number;
-            updates: number;
-        };
+        statusHistory: any;
+        updates: any;
+        workLogs: any;
+        approvalRequests: any;
+        _count: any;
     } | null>;
     rejectWork(id: string, dto: {
         reason: string;
@@ -591,14 +592,18 @@ export declare class RequestsController {
         } | null;
         organizationUnitId: any;
         organizationUnit: any;
-        items: any;
-        specificationItems: never[];
+        items: never[];
+        specificationItems: any;
         files: any;
-        statusHistory: any;
-        updates: any;
-        workLogs: any;
-        approvalRequests: any;
-        _count: any;
+        statusHistory: never[];
+        updates: never[];
+        workLogs: never[];
+        approvalRequests: never[];
+        _count: {
+            workLogs: number;
+            approvalRequests: number;
+            updates: number;
+        };
     } | {
         id: any;
         ticketNumber: any;
@@ -621,18 +626,14 @@ export declare class RequestsController {
         } | null;
         organizationUnitId: any;
         organizationUnit: any;
-        items: never[];
-        specificationItems: any;
+        items: any;
+        specificationItems: never[];
         files: any;
-        statusHistory: never[];
-        updates: never[];
-        workLogs: never[];
-        approvalRequests: never[];
-        _count: {
-            workLogs: number;
-            approvalRequests: number;
-            updates: number;
-        };
+        statusHistory: any;
+        updates: any;
+        workLogs: any;
+        approvalRequests: any;
+        _count: any;
     } | null>;
     addUpdate(id: string, dto: AddRequestUpdateDto, userId?: string): Promise<{
         id: string;
@@ -673,16 +674,10 @@ export declare class RequestsController {
     specificationItems(id: string): Promise<{
         maintenanceRequestId: string;
         id: string;
+        priority: import("@prisma/client").$Enums.RequestPriority;
         description: string | null;
         createdAt: Date;
         updatedAt: Date;
-        category: {
-            id: string;
-            name: string;
-        } | null;
-        categoryId: string | null;
-        unitOfMeasure: string | null;
-        priority: import("@prisma/client").$Enums.RequestPriority;
         files: {
             id: string;
             createdAt: Date;
@@ -693,42 +688,18 @@ export declare class RequestsController {
         }[];
         requestedItemName: string;
         quantity: number;
+        unitOfMeasure: string | null;
+        category: {
+            id: string;
+            name: string;
+        } | null;
+        categoryId: string | null;
         specificationRequestId: string;
     }[]>;
-    remove(id: string): Promise<{
+    remove(id: string, user: AuthUser): Promise<{
         success: boolean;
     }>;
     restore(id: string): Promise<{
-        id: any;
-        ticketNumber: any;
-        requestType: import("./dto/create-request.dto").RequestTypeEnum;
-        priority: any;
-        status: any;
-        title: any;
-        description: any;
-        rejectionReason: any;
-        requestedAt: any;
-        createdAt: any;
-        updatedAt: any;
-        requesterId: any;
-        requester: {
-            id: any;
-            fullName: any;
-            email: any;
-            phone: any;
-            organizationUnit: any;
-        } | null;
-        organizationUnitId: any;
-        organizationUnit: any;
-        items: any;
-        specificationItems: never[];
-        files: any;
-        statusHistory: any;
-        updates: any;
-        workLogs: any;
-        approvalRequests: any;
-        _count: any;
-    } | {
         id: any;
         ticketNumber: any;
         requestType: import("./dto/create-request.dto").RequestTypeEnum;
@@ -762,5 +733,35 @@ export declare class RequestsController {
             approvalRequests: number;
             updates: number;
         };
+    } | {
+        id: any;
+        ticketNumber: any;
+        requestType: import("./dto/create-request.dto").RequestTypeEnum;
+        priority: any;
+        status: any;
+        title: any;
+        description: any;
+        rejectionReason: any;
+        requestedAt: any;
+        createdAt: any;
+        updatedAt: any;
+        requesterId: any;
+        requester: {
+            id: any;
+            fullName: any;
+            email: any;
+            phone: any;
+            organizationUnit: any;
+        } | null;
+        organizationUnitId: any;
+        organizationUnit: any;
+        items: any;
+        specificationItems: never[];
+        files: any;
+        statusHistory: any;
+        updates: any;
+        workLogs: any;
+        approvalRequests: any;
+        _count: any;
     } | null>;
 }

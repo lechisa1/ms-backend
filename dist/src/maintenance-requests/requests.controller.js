@@ -127,8 +127,8 @@ let RequestsController = class RequestsController {
     specificationItems(id) {
         return this.specificationItemsService.findByRequest(id);
     }
-    remove(id) {
-        return this.requestsService.remove(id);
+    remove(id, user) {
+        return this.requestsService.remove(id, user);
     }
     restore(id) {
         return this.requestsService.restore(id);
@@ -327,11 +327,11 @@ __decorate([
 ], RequestsController.prototype, "specificationItems", null);
 __decorate([
     (0, common_1.Delete)(':id'),
-    (0, permissions_decorator_1.RequirePermissions)('requests:delete'),
     (0, swagger_1.ApiOperation)({ summary: 'Soft delete a request' }),
     __param(0, (0, common_1.Param)('id', common_1.ParseUUIDPipe)),
+    __param(1, (0, current_user_decorator_1.CurrentUser)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [String, Object]),
     __metadata("design:returntype", void 0)
 ], RequestsController.prototype, "remove", null);
 __decorate([
