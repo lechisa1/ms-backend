@@ -11,9 +11,17 @@ async function bootstrap() {
     const app = await core_1.NestFactory.create(app_module_1.AppModule);
     const configService = app.get(config_1.ConfigService);
     app.setGlobalPrefix('api');
+    const frontendUrl = configService.get('FRONTEND_URL');
+    const allowedOrigins = [
+        'http://localhost:3001',
+        'http://127.0.0.1:3001',
+        'http://localhost:3000',
+        ...(frontendUrl ? [frontendUrl] : []),
+    ];
     app.enableCors({
-        origin: configService.get('FRONTEND_URL', '*'),
+        origin: allowedOrigins,
         credentials: true,
+        exposedHeaders: ['X-XSRF-TOKEN', 'x-xsrf-token'],
     });
     app.useGlobalInterceptors(new bigint_serializer_interceptor_1.BigIntSerializerInterceptor());
     app.useGlobalPipes(new security_sanitizer_pipe_1.SecuritySanitizerPipe(), new common_1.ValidationPipe({

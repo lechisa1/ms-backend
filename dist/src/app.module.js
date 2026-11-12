@@ -30,6 +30,7 @@ const approvals_module_1 = require("./approvals/approvals.module");
 const notifications_module_1 = require("./notifications/notifications.module");
 const reports_module_1 = require("./reports/reports.module");
 const health_controller_1 = require("./health/health.controller");
+const csrf_guard_1 = require("./common/guards/csrf.guard");
 const jwt_auth_guard_1 = require("./common/guards/jwt-auth.guard");
 const permissions_guard_1 = require("./common/guards/permissions.guard");
 let AppModule = class AppModule {
@@ -61,6 +62,7 @@ exports.AppModule = AppModule = __decorate([
         ],
         controllers: [health_controller_1.HealthController],
         providers: [
+            { provide: core_1.APP_GUARD, useClass: csrf_guard_1.CsrfGuard },
             { provide: core_1.APP_GUARD, useClass: jwt_auth_guard_1.JwtAuthGuard },
             { provide: core_1.APP_GUARD, useClass: permissions_guard_1.PermissionsGuard },
         ],

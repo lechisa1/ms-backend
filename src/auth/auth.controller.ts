@@ -6,7 +6,10 @@ import {
   HttpStatus,
   Ip,
   Post,
+  Res,
 } from '@nestjs/common';
+import type { Response } from 'express';
+import * as crypto from 'crypto';
 import {
   ApiBearerAuth,
   ApiOkResponse,
@@ -20,6 +23,7 @@ import { RegisterDto } from './dto/register.dto';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import { Public } from '../common/decorators/public.decorator';
+import { SkipCsrf } from '../common/decorators/skip-csrf.decorator';
 import { CurrentUser } from '../common/decorators/current-user.decorator';
 import type { AuthUser } from '../common/interfaces/auth-user.interface';
 
@@ -29,6 +33,22 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Public()
+  @SkipCsrf()
+  @Get('csrf')
+  @ApiOperation({ summary: 'Acquire CSRF token' })
+  getCsrfToken(@Res({ passthrough: true }) res: Response) {
+    const token = crypto.randomBytes(32).toString('hex');
+    res.cookie('XSRF-TOKEN', token, {
+      path: '/',
+      httpOnly: false,
+      sameSite: 'lax',
+      secure: process.env.NODE_ENV === 'production',
+    });
+    return { csrfToken: token };
+  }
+
+  @Public()
+  @SkipCsrf()
   @Post('register')
   @ApiOperation({ summary: 'Register a new account' })
   register(@Body() dto: RegisterDto): Promise<AuthResult> {
@@ -36,6 +56,7 @@ export class AuthController {
   }
 
   @Public()
+  @SkipCsrf()
   @Post('login')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Login with email and password' })
@@ -46,6 +67,7 @@ export class AuthController {
   }
 
   @Public()
+  @SkipCsrf()
   @Post('refresh')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Issue a new access token' })

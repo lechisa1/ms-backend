@@ -1,3 +1,4 @@
+import type { Response } from 'express';
 import { AuthService, AuthResult } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
@@ -7,6 +8,9 @@ import type { AuthUser } from '../common/interfaces/auth-user.interface';
 export declare class AuthController {
     private readonly authService;
     constructor(authService: AuthService);
+    getCsrfToken(res: Response): {
+        csrfToken: string;
+    };
     register(dto: RegisterDto): Promise<AuthResult>;
     login(dto: LoginDto, ip: string): Promise<AuthResult>;
     refresh(dto: RefreshTokenDto): Promise<import("./auth.service").AuthTokens>;

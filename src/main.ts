@@ -11,9 +11,19 @@ async function bootstrap() {
   const configService = app.get(ConfigService);
 
   app.setGlobalPrefix('api');
+
+  const frontendUrl = configService.get<string>('FRONTEND_URL');
+  const allowedOrigins = [
+    'http://localhost:3001',
+    'http://127.0.0.1:3001',
+    'http://localhost:3000',
+    ...(frontendUrl ? [frontendUrl] : []),
+  ];
+
   app.enableCors({
-    origin: configService.get<string>('FRONTEND_URL', '*'),
+    origin: allowedOrigins,
     credentials: true,
+    exposedHeaders: ['X-XSRF-TOKEN', 'x-xsrf-token'],
   });
 
   app.useGlobalInterceptors(new BigIntSerializerInterceptor());
